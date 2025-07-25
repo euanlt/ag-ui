@@ -10,12 +10,13 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
+    "prebuild": "pnpm run generate || echo 'Protoc generation failed, continuing with existing files'",
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint \"src/**/*.ts*\"",
     "clean": "rm -rf dist .turbo node_modules",
     "test": "jest",
-    "generate": "mkdir -p ./src/generated && protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./src/generated --ts_proto_opt=esModuleInterop=true,outputJsonMethods=false,outputClientImpl=false -I ./src/proto ./src/proto/*.proto",
+    "generate": "node -e \"require('fs').mkdirSync('./src/generated', {recursive: true})\" && (protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./src/generated --ts_proto_opt=esModuleInterop=true,outputJsonMethods=false,outputClientImpl=false -I ./src/proto ./src/proto/*.proto || echo 'Protoc not found, skipping generation')",
     "link:global": "pnpm link --global",
     "unlink:global": "pnpm unlink --global"
   },
